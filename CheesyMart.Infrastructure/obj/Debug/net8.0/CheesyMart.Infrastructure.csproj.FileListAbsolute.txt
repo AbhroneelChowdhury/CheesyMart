@@ -1,0 +1,12 @@
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\bin\Debug\net8.0\CheesyMart.Infrastructure.deps.json
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\bin\Debug\net8.0\CheesyMart.Infrastructure.dll
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\bin\Debug\net8.0\CheesyMart.Infrastructure.pdb
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.AssemblyInfo.cs
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.dll
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\refint\CheesyMart.Infrastructure.dll
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\CheesyMart.Infrastructure.pdb
+C:\Users\abhro\RiderProjects\CheesyMart\CheesyMart.Infrastructure\obj\Debug\net8.0\ref\CheesyMart.Infrastructure.dll

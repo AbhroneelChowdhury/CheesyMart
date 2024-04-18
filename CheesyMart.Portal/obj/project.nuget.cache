@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "i8CWhm62W5NbmAskEL2xVlmi9yAaPACl4RkpoXpfV4HgEw0M40rB2hZ9D698MAJ00HBXvhP/TIc1eQzd0KbEyA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\abhro\\RiderProjects\\CheesyMart\\CheesyMart.Portal\\CheesyMart.Portal.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\abhro\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.4\\microsoft.aspnetcore.app.ref.8.0.4.nupkg.sha512"
+  ],
+  "logs": []
+}
