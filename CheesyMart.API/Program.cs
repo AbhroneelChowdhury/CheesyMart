@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+const string allowAllCors = "AllowAll";
 
 // Add services to the container.
 var configuration = new ConfigurationBuilder()
@@ -25,6 +26,19 @@ builder.Services.AddScoped<ICheesyProductService, CheesyProductService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApiDocument();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(allowAllCors,
+        builder =>
+        {
+            builder.AllowAnyHeader();
+            builder.AllowAnyMethod();
+            builder.AllowAnyOrigin();
+        });
+    
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -65,6 +79,8 @@ app.UseSerilogRequestLogging(options =>
     };
     
 });
+
+app.UseCors(allowAllCors);
 
 app.UseMiddleware<ExceptionMiddleware>();
 

@@ -1,0 +1,14 @@
+.skip-to-content {
+    position: absolute;
+    left: 0;
+    padding: 10px   ;
+    background-color: #61daff;
+    z-index: 10000;
+    transform: translateY(-100%);
+    transform: transform 0.3;
+    color: black;
+}
+
+.skip-to-content:focus{
+    transform: translateY(0%);
+}
