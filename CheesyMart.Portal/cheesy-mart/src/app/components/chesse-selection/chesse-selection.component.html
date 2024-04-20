@@ -1,0 +1,26 @@
+<div *ngIf="state ==='loaded'" class="cheese-board">
+  <mat-card *ngFor="let cheeseProduct of dataModel" class="cheese-card">
+    <mat-card-header>
+      <mat-card-title>{{cheeseProduct.name}}</mat-card-title>
+      <mat-card-subtitle>{{cheeseProduct.cheeseType | camelSpace}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-chip-set role="list">
+        <mat-chip *ngIf="cheeseProduct.color" role="listitem"
+          >color: {{cheeseProduct.color}}
+        </mat-chip>
+        <mat-chip role="listitem">price: ${{cheeseProduct.pricePerKilo}} </mat-chip>
+      </mat-chip-set>
+    </mat-card-content>
+    <mat-card-actions>
+      <button routerLink="./manage-product/{{cheeseProduct.id}}" mat-button color="primary">
+        <mat-icon fontIcon="edit"></mat-icon>
+        Edit
+      </button>
+      <button mat-button color="warn" (click)="deleteCheeseFromCatalog(cheeseProduct)">
+        <mat-icon fontIcon="delete"></mat-icon>Delete
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

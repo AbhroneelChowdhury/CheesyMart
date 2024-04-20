@@ -13,6 +13,5 @@ public interface ICheesyProductService
     
     Task<CheesyProductModel> GetCheeseProductInCatalog(int id);
     
-    
-    Task<List<CheesyProductModel>> GetCheeseProductsInCatalog(SearchCheesyProductCatalogModel searchModel);
+    Task<CheesyProductsModel> GetCheeseProductsInCatalog(SearchCheesyProductCatalogModel searchModel);
 }

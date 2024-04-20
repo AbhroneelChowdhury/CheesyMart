@@ -86,7 +86,7 @@ public class CheesyProductService(MainDbContext mainDbContext,
         return mapper.Map<CheesyProductModel>(product);
     }
 
-    public async Task<List<CheesyProductModel>> GetCheeseProductsInCatalog(SearchCheesyProductCatalogModel searchModel)
+    public async Task<CheesyProductsModel> GetCheeseProductsInCatalog(SearchCheesyProductCatalogModel searchModel)
     {
         var searchRequest = mainDbContext.CheeseProducts.AsQueryable();
         if (!string.IsNullOrEmpty(searchModel.Color))
@@ -104,6 +104,9 @@ public class CheesyProductService(MainDbContext mainDbContext,
         }
 
         var searchResponse = await searchRequest.ToListAsync();
-        return searchResponse.Select(product => mapper.Map<CheesyProductModel>(product)).ToList();
+        return new CheesyProductsModel
+        {
+            Products = searchResponse.Select(product => mapper.Map<CheesyProductModel>(product)).ToList()
+        };
     }
 }

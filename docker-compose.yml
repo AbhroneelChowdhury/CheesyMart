@@ -1,0 +1,6 @@
+﻿services:
+  cheesymart.api:
+    image: cheesymart.api
+    build:
+      context: .
+      dockerfile: CheesyMart.API/Dockerfile

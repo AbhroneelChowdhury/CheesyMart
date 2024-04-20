@@ -1,7 +1,6 @@
 using CheesyMart.Core.DomainModels;
 using CheesyMart.Core.Interfaces;
 using CheesyMart.Core.QueryModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -14,8 +13,8 @@ namespace CheesyMart.API.Controllers
     {
         [HttpGet]
         [SwaggerOperation(OperationId = "CheesyProductCatalog_GetAll")]
-        [ProducesResponseType(typeof(IEnumerable<CheesyProductModel>), StatusCodes.Status200OK)]
-        public async Task<IEnumerable<CheesyProductModel>> Get(string? name, string? cheeseType, string? cheeseColor)
+        [ProducesResponseType(typeof(CheesyProductsModel), StatusCodes.Status200OK)]
+        public async Task<CheesyProductsModel> Get(string? name, string? cheeseType, string? cheeseColor)
         {
             return await cheesyProductService.GetCheeseProductsInCatalog(new SearchCheesyProductCatalogModel
             {

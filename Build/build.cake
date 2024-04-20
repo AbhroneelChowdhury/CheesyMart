@@ -51,7 +51,7 @@ Task("CheesyMartAPI.Angular")
     .Does(() => 
 {
     NSwag.FromJsonSpecification("../CheesyMart.API/bin/debug/net8.0/swagger.json")
-    .GenerateTypeScriptClient("../CheesyMart.Portal/cheesyMart/src/app/core/services/cheesy-client.service.ts", new TypeScriptClientGeneratorSettings() {
+    .GenerateTypeScriptClient("../CheesyMart.Portal/cheesy-mart/src/app/services/cheesy-client.service.ts", new TypeScriptClientGeneratorSettings() {
        BaseUrlTokenName = "CHEESEYMART_API_BASE_URL",
        ClassName = "{controller}Client",
        Template = TypeScriptTemplate.Angular,

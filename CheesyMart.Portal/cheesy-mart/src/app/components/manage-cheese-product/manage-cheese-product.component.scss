@@ -1,0 +1,34 @@
+.cm-page-heading {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.cm-flex-row {
+  display: flex;
+  flex-direction: row;
+}
+.cm-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.cm-form-group {
+  padding-left: 20px;
+  padding-right: 4px;
+}
+
+.cm-gap-15 {
+  gap: 15px;
+}
+
+.cm-gap-30 {
+  gap: 30px;
+}
+
+.cm-pt-10 {
+  padding-top: 10px;
+}
+.cm-section-content {
+  box-sizing: border-box;
+}

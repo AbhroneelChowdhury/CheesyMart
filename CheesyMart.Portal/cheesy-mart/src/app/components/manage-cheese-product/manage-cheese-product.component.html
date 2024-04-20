@@ -1,0 +1,167 @@
+<!-- <div class="mt-10" *ngIf="state !== 'loaded'">
+	<adha-error-spinner [state]="state" [loadingMessage]="'Loading Partner service details..'"></adha-error-spinner>
+</div>
+<div class="cdk-visually-hidden" role="status">
+	{{ state == 'loaded' ? 'loaded partner service details' : '' }}
+</div> -->
+<div *ngIf="state === 'loaded'">
+  <h1 class="cm-page-heading" *ngIf="!isEdit">Add cheese product</h1>
+
+  <h1 class="cm-page-heading" *ngIf="isEdit">Edit cheese product</h1>
+
+  <form [formGroup]="formGroup" class="cm-form-group">
+    <h2 class="cm-section-header">Product details</h2>
+
+    <div>
+      <div role="region" aria-label="Cheese name" class="cm-flex-column cm-section-content">
+        <mat-form-field appearance="fill">
+          <mat-label>Enter cheese name</mat-label>
+          <input
+            [formControl]="formGroup.controls.name"
+            matInput
+            type="text"
+            maxlength="200"
+            required
+          />
+
+          <mat-error *ngIf="formGroup.controls.name.hasError('required')"
+            >Please enter a name</mat-error
+          >
+        </mat-form-field>
+      </div>
+
+      <div role="region" aria-label="Cheese type" class="cm-flex-column cm-section-content">
+        <mat-form-field appearance="fill">
+          <mat-label>Select cheese type</mat-label>
+          <mat-select [formControl]="formGroup.controls.cheeseType" required>
+            <mat-option>--</mat-option>
+
+            <mat-option
+              *ngFor="let cheeseType of cheeseTypes"
+              [value]="cheeseType"
+              >{{cheeseType | camelSpace}}</mat-option
+            >
+          </mat-select>
+
+          <mat-error *ngIf="formGroup.controls.cheeseType.hasError('required')"
+            >Please choose a cheese type</mat-error
+          >
+        </mat-form-field>
+      </div>
+
+      <div role="region" aria-label="Cheese color" class="cm-flex-column cm-section-content">
+        <mat-form-field appearance="fill">
+          <mat-label>Select cheese color</mat-label>
+          <mat-select [formControl]="formGroup.controls.cheeseColor">
+            <mat-option>--</mat-option>
+
+            <mat-option
+              *ngFor="let color of cheeseColorTypes"
+              [value]="color"
+              >{{color | camelSpace}}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div role="region" aria-label="Cheese price per Kg" class="cm-flex-column cm-section-content">
+        <mat-form-field appearance="fill">
+          <mat-label>Enter cheese price per Kg</mat-label>
+          <input
+            [formControl]="formGroup.controls.pricePerKilo"
+            matInput
+            type="text"
+            required
+            appPricePerKilo
+          />
+          <mat-error *ngIf="formGroup.controls.pricePerKilo.hasError('required')"
+            >Please enter price per Kg</mat-error
+          >
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- <h2 class="cm-section-header">Partner service logo</h2>
+    <div class="cm-mb-10 cm-section-content">
+      <i
+        >Please note that logo images must be less than 1MB<br />
+        The supported file types are GIF, JPEG, PNG and SVG.</i
+      >
+    </div>
+    <div
+      [ngClass]="breakpoints[Breakpoints.XSmall] ? 'cm-flex-column cm-gap-15' : 'cm-flex-row cm-gap-30'"
+      class="cm-mb-20"
+    >
+      <div
+        role="region"
+        aria-label="Partner service details"
+        [ngClass]="breakpoints[Breakpoints.XSmall] || breakpoints[Breakpoints.Small] ? 'cm-100pc' : 'cm-50pc'"
+        class="cm-flex-column cm-section-content"
+      >
+        <img
+          *ngIf="formGroup.controls.logoData.value.length > 0"
+          class="logo cm-mb-30"
+          src="data:{{ formGroup.controls.logoMimeType.value }};base64, {{
+						formGroup.controls.logoData.value
+					}}"
+          alt="Partner service logo"
+        />
+        <div class="cm-flex-row cm-gap-30 cm-mb-10">
+          <button type="button" mat-flat-button color="primary" (click)="logoInput.click()">
+            {{ formGroup.controls.logoData.value.length > 0 ? 'Replace' : 'Add an' }} image{{
+							formGroup.controls.logoData.value.length > 0 ? ' with another' : ''
+            }}
+          </button>
+          <button
+            mat-stroked-button
+            (click)="removeLogoImage()"
+            *ngIf="formGroup.controls.logoData.value.length > 0"
+          >
+            Remove image
+          </button>
+          <adha-button-loader
+						style="padding-top: 3px"
+						[isLoading]="logoUploadStatus === uploadStatus.Uploading"
+						loadingMessage="Image uploading"
+						[isLoaded]="logoUploadStatus === uploadStatus.Uploaded"
+						loadedMessage="Image upload succeeded"></adha-button-loader>
+          <input
+            style="display: none"
+            #logoInput
+            type="file"
+            accept=".gif, .png, .jpg, .svg"
+            (change)="uploadLogo($event)"
+          />
+        </div>
+        <div class="cm-flex-row cm-mt-20" *ngIf="formGroup.controls.logoData.value.length > 0">
+          <mat-form-field class="cm-100pc">
+            <mat-label>Enter text read out by screen readers</mat-label>
+            <input formControlName="logoDescription" matInput maxlength="50" type="text" />
+            <adha-form-field-clear-button
+              [control]="formGroup.controls.logoDescription"
+              matSuffix
+            ></adha-form-field-clear-button>
+            <mat-error *ngIf="validationService.isInvalid(formGroup, 'logoDescription')">
+              {{ validationService.getErrorMessage(formGroup, 'logoDescription') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </div> -->
+
+    <div class="cm-flex-row cm-gap-15 cm-pt-10">
+      <div>
+        <button mat-flat-button color="primary" [disabled]="isLoading" (click)="save()">
+          {{ isEdit ? 'Save' : 'Add cheese product' }}
+        </button>
+      </div>
+
+      <div>
+        <button mat-stroked-button routerLink="" [disabled]="isSaving">Cancel</button>
+      </div>
+
+      <mat-icon *ngIf="isSaving"></mat-icon>
+      <div class="cdk-visually-hidden" role="status">{{ isSaving ? 'saving' : '' }}</div>
+    </div>
+  </form>
+</div>

@@ -11,6 +11,8 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 const string allowAllCors = "AllowAll";
+const string name = "CheesyMart API";
+const string version = "v1";
 
 // Add services to the container.
 var configuration = new ConfigurationBuilder()
@@ -23,10 +25,12 @@ builder.Services.AddDbContext<MainDbContext>(
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddValidatorsFromAssemblyContaining<CheesyProductModelValidator>();
 builder.Services.AddScoped<ICheesyProductService, CheesyProductService>();
+builder.Services.AddScoped<IProductImageService, ProductImageService>();
+builder.Services.AddScoped<IMetadataService, MetadataService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApiDocument();
+
 
 builder.Services.AddCors(options =>
 {
@@ -41,10 +45,11 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSwaggerGen(c =>
 {
+    c.EnableAnnotations();
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "CheesyMart API",
-        Version = "v1"
+        Title = name,
+        Version = version
     });
 });
 
@@ -62,8 +67,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(c =>
+    {
+        c.SerializeAsV2 = true;
+    });
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint($"swagger/{version}/swagger.json", $"{name} {version}");
+        c.RoutePrefix = string.Empty;
+        c.DocumentTitle = name;
+    });
 }
 
 app.UseSerilogRequestLogging(options =>
