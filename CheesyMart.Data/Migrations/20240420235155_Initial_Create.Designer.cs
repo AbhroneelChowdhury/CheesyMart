@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CheesyMart.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20240418101255_Initial_Create")]
+    [Migration("20240420235155_Initial_Create")]
     partial class Initial_Create
     {
         /// <inheritdoc />
@@ -64,16 +64,8 @@ namespace CheesyMart.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AlternateText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("CheeseProductId")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<DateTimeOffset>("LastUpdated")
                         .HasColumnType("datetimeoffset");
@@ -85,6 +77,28 @@ namespace CheesyMart.Data.Migrations
                     b.ToTable("ProductImages");
                 });
 
+            modelBuilder.Entity("CheesyMart.Data.Entities.ProductImageData", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AlternateText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("MimeType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductImages", (string)null);
+                });
+
             modelBuilder.Entity("CheesyMart.Data.Entities.ProductImage", b =>
                 {
                     b.HasOne("CheesyMart.Data.Entities.CheeseProduct", "CheeseProduct")
@@ -94,9 +108,24 @@ namespace CheesyMart.Data.Migrations
                     b.Navigation("CheeseProduct");
                 });
 
+            modelBuilder.Entity("CheesyMart.Data.Entities.ProductImageData", b =>
+                {
+                    b.HasOne("CheesyMart.Data.Entities.ProductImage", null)
+                        .WithOne("ProductImageData")
+                        .HasForeignKey("CheesyMart.Data.Entities.ProductImageData", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CheesyMart.Data.Entities.CheeseProduct", b =>
                 {
                     b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("CheesyMart.Data.Entities.ProductImage", b =>
+                {
+                    b.Navigation("ProductImageData")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

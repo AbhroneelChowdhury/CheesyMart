@@ -65,7 +65,8 @@ public class CheesyProductService(MainDbContext mainDbContext,
 
     public async Task<CheesyProductModel> DeleteCheeseProductInCatalog(int id)
     {
-        var product = await mainDbContext.CheeseProducts.FirstOrDefaultAsync(c => c.Id == id);
+        var product = await mainDbContext.CheeseProducts
+            .Include(c => c.Images).FirstOrDefaultAsync(c => c.Id == id);
         if (product == null)
         {
             throw new NotFoundException("Item not found");
@@ -78,7 +79,9 @@ public class CheesyProductService(MainDbContext mainDbContext,
 
     public async Task<CheesyProductModel> GetCheeseProductInCatalog(int id)
     {
-        var product = await mainDbContext.CheeseProducts.FirstOrDefaultAsync(c => c.Id == id);
+        var product = await mainDbContext.CheeseProducts
+            .Include(c => c.Images)
+            .FirstOrDefaultAsync(c => c.Id == id);
         if (product == null)
         {
             throw new NotFoundException("Item not found");
@@ -88,7 +91,8 @@ public class CheesyProductService(MainDbContext mainDbContext,
 
     public async Task<CheesyProductsModel> GetCheeseProductsInCatalog(SearchCheesyProductCatalogModel searchModel)
     {
-        var searchRequest = mainDbContext.CheeseProducts.AsQueryable();
+        var searchRequest = mainDbContext.CheeseProducts
+            .Include(c=> c.Images).AsQueryable();
         if (!string.IsNullOrEmpty(searchModel.Color))
         {
             var searchColor = (CheeseColor)Enum.Parse(typeof(CheeseColor), searchModel.Color);
@@ -106,7 +110,7 @@ public class CheesyProductService(MainDbContext mainDbContext,
         var searchResponse = await searchRequest.ToListAsync();
         return new CheesyProductsModel
         {
-            Products = searchResponse.Select(product => mapper.Map<CheesyProductModel>(product)).ToList()
+            Products = searchResponse.Select(mapper.Map<CheesyProductModel>).ToList()
         };
     }
 }

@@ -1,3 +1,11 @@
+<div class="mt-10" *ngIf="state === 'busy'">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="cdk-visually-hidden" role="status">
+  {{ state == 'loaded' ? 'loaded cheese products' : '' }}
+</div>
+<h1>Our finest collection of cheese</h1>
+
 <div *ngIf="state ==='loaded'" class="cheese-board">
   <mat-card *ngFor="let cheeseProduct of dataModel" class="cheese-card">
     <mat-card-header>
@@ -12,6 +20,12 @@
         </mat-chip>
         <mat-chip role="listitem">price: ${{cheeseProduct.pricePerKilo}} </mat-chip>
       </mat-chip-set>
+      <img
+        *ngIf="cheeseProduct.productImages && cheeseProduct.productImages.length > 0"
+        mat-card-image
+        src="{{getProductImageUrl(cheeseProduct.productImages[0])}}"
+        class="image-box"
+      />
     </mat-card-content>
     <mat-card-actions>
       <button routerLink="./manage-product/{{cheeseProduct.id}}" mat-button color="primary">
@@ -23,4 +37,9 @@
       </button>
     </mat-card-actions>
   </mat-card>
+
+  <div *ngIf="!dataModel || dataModel.length === 0">
+    <h2>Not so cheesy here !</h2>
+    <button routerLink="./manage-product" mat-button color="primary">Add some</button>
+  </div>
 </div>

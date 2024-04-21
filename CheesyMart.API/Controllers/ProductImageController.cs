@@ -1,6 +1,6 @@
+using CheesyMart.Core.CommandModels;
 using CheesyMart.Core.DomainModels;
 using CheesyMart.Core.Interfaces;
-using CheesyMart.Core.QueryModels;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -17,16 +17,16 @@ namespace CheesyMart.API.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var productImage = await productImageService.GetProductImage(id);
-            return File(productImage.ImageData, productImage.MimeType);
+            return File(fileContents: productImage.Data, productImage.MimeType);
         }
 
 
         [HttpPost]
         [SwaggerOperation(OperationId = "ProductImage_Create")]
         [ProducesResponseType(typeof(ProductImageModel), StatusCodes.Status200OK)]
-        public async Task<ProductImageModel> Create([FromBody] ProductImageModel productImageModel)
+        public async Task<ProductImageModel> Create([FromBody] ProductImageCommandModel productImageCommandModel)
         {
-            return await productImageService.AddProductImage(productImageModel);
+            return await productImageService.AddProductImage(productImageCommandModel);
         }
 
         

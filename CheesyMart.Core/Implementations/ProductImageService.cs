@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CheesyMart.Core.CommandModels;
 using CheesyMart.Core.DomainModels;
 using CheesyMart.Core.Interfaces;
 using CheesyMart.Data.Context;
@@ -10,22 +11,25 @@ using Microsoft.EntityFrameworkCore;
 namespace CheesyMart.Core.Implementations;
 
 public class ProductImageService(MainDbContext mainDbContext,
-    IValidator<ProductImageModel> validator, IMapper mapper) : IProductImageService
+    IValidator<ProductImageCommandModel> validator, IMapper mapper) : IProductImageService
 {
-    public async Task<ProductImageModel> AddProductImage(ProductImageModel productImageModel)
+    public async Task<ProductImageModel> AddProductImage(ProductImageCommandModel productImageCommandModel)
     {
-        await validator.ValidateAndThrowAsync(productImageModel);
+        await validator.ValidateAndThrowAsync(productImageCommandModel);
         var productImage = new ProductImage
         {
             LastUpdated = DateTimeOffset.UtcNow,
-            Data = Convert.FromBase64String(productImageModel.ImageData),
-            AlternateText = productImageModel.AltText,
-            CheeseProductId = productImageModel.CheesyProductId
+            ProductImageData = new ProductImageData
+            {
+                AlternateText = productImageCommandModel.AlternateText,
+                MimeType = productImageCommandModel.MimeType,
+                Data = Convert.FromBase64String(productImageCommandModel.Data),
+            },
+            CheeseProductId = productImageCommandModel.CheesyProductId
         };
         await mainDbContext.ProductImages.AddAsync(productImage);
         await mainDbContext.SaveChangesAsync();
-        productImageModel.Id = productImage.Id;
-        return productImageModel;
+        return mapper.Map<ProductImageModel>(productImage);
     }
 
     public async Task DeleteProductImage(int id)
@@ -42,7 +46,8 @@ public class ProductImageService(MainDbContext mainDbContext,
 
     public async Task<ProductImageModel> GetProductImage(int id)
     {
-        var imageRecord = await mainDbContext.ProductImages.FirstOrDefaultAsync(c => c.Id == id);
+        var imageRecord = await mainDbContext.ProductImages
+            .Include(p => p.ProductImageData).FirstOrDefaultAsync(c => c.Id == id);
         if (imageRecord == null)
         {
             throw new NotFoundException("Requested image not found");

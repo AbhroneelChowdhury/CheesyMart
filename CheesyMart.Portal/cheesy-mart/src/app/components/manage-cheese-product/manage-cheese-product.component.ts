@@ -9,6 +9,7 @@ import {
   CheesyProductModel,
   MetadataClient,
   ProductImageClient,
+  ProductImageModel,
 } from '../../services/cheesy-client.service';
 import {ComponentBase} from '../componentbase';
 import {BreakpointObserver} from '@angular/cdk/layout';
@@ -20,9 +21,13 @@ import {MatIconModule} from '@angular/material/icon';
 import {CamelSpacePipe} from '../../pipes/camel-space.pipe';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
-
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatInputModule} from '@angular/material/input';
 import {PricePerKiloDirective} from '../../directives/price-per-kilo.directive';
+import {MatCardModule} from '@angular/material/card';
+import {environment} from '../../../environments/environment';
+import {ConfirmationDialogComponent} from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
 enum UploadStatus {
   NotUploaded,
   Uploading,
@@ -42,6 +47,8 @@ enum UploadStatus {
     HttpClientModule,
     CamelSpacePipe,
     MatFormFieldModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
     RouterModule,
     MatInputModule,
     ReactiveFormsModule,
@@ -56,6 +63,8 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
   id?: number;
   cheeseProduct?: CheesyProductModel;
   protected readonly uploadStatus = UploadStatus;
+  currentImageId?: number;
+  currentSrc: string = '';
 
   cheeseTypes: string[] = [];
   cheeseColorTypes: string[] = [];
@@ -80,6 +89,7 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
     private cheesyClient: CheesyProductCatalogClient,
     private productImageClient: ProductImageClient,
     private metadataClient: MetadataClient,
+    private _snackBar: MatSnackBar,
     public override responsive: BreakpointObserver,
   ) {
     super(responsive);
@@ -140,6 +150,7 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
         }),
         catchError((error) => {
           this.state = 'error';
+          this._snackBar.open(error, 'close');
           return of();
         }),
         takeUntil(this.ngUnsubscribe$),
@@ -149,6 +160,11 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
 
   mapForEdit(product: CheesyProductModel): void {
     this.imageIds = product.productImages ?? [];
+    if (this.imageIds.length > 0) {
+      this.currentImageId = this.imageIds[0];
+      this.currentSrc = `${environment.cheesymartApiEndpoint}/api/ProductImage/${this.imageIds[0]}`;
+    }
+
     this.formGroup.patchValue({
       name: product.name,
       cheeseType: product.cheeseType,
@@ -167,7 +183,7 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
 
   save() {
     if (!this.formGroup.valid) {
-      //this.pageNotificationComponent.showValidationSummaryError(this.formGroup.valid, errors);
+      this._snackBar.open('Please check the inputs', 'close');
       return;
     }
 
@@ -177,8 +193,7 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
     request.cheeseType = this.formGroup.value.cheeseType;
     request.color = this.formGroup.value.cheeseColor;
     request.pricePerKilo = this.formGroup.value.pricePerKilo;
-
-    request.productImages = this.imageIds ? [] : this.imageIds;
+    request.productImages = this.imageIds;
 
     if (this.isEdit) {
       request.id = this.id;
@@ -190,9 +205,10 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
           }),
           catchError((error) => {
             this.isSaving = false;
-            //this.pageNotificationComponent!.showError(error);
+            this._snackBar.open(error, 'close');
             return of();
           }),
+          takeUntil(this.ngUnsubscribe$),
         )
         .subscribe();
     } else {
@@ -204,88 +220,133 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
           }),
           catchError((error) => {
             this.isSaving = false;
-            //this.pageNotificationComponent!.showError(message);
+            this._snackBar.open(error, 'close');
             return of();
           }),
+          takeUntil(this.ngUnsubscribe$),
         )
         .subscribe((res) => console.log(res));
     }
   }
+
+  deleteImage() {
+    if (this.currentImageId) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: `Delete image`,
+          message: `Are you sure you want to delete ?`,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.productImageClient
+            .delete(this.currentImageId!)
+            .pipe(
+              tap(() => {
+                this.removeCurrentImageFromList();
+                this.currentImageId = undefined;
+                this.nextImage();
+              }),
+              catchError((error) => {
+                this._snackBar.open(error, 'close');
+                return of();
+              }),
+              takeUntil(this.ngUnsubscribe$),
+            )
+            .subscribe();
+        }
+      });
+    }
+  }
+
+  removeCurrentImageFromList() {
+    const indexToRemove = this.imageIds.indexOf(this.currentImageId!);
+    if (indexToRemove > -1) {
+      this.imageIds.splice(indexToRemove, 1);
+    }
+  }
+
+  nextImage() {
+    if (!this.currentImageId && this.imageIds.length > 0) {
+      this.currentImageId = this.imageIds[0];
+      this.currentSrc = `${environment.cheesymartApiEndpoint}/api/ProductImage/${this.currentImageId}`;
+    } else {
+      const indexToCurrent = this.imageIds.indexOf(this.currentImageId!);
+      if (indexToCurrent === this.imageIds.length - 1) {
+        this.currentImageId = this.imageIds[0];
+        this.currentSrc = `${environment.cheesymartApiEndpoint}/api/ProductImage/${this.currentImageId}`;
+      } else {
+        this.currentImageId = this.imageIds[indexToCurrent + 1];
+        this.currentSrc = `${environment.cheesymartApiEndpoint}/api/ProductImage/${this.currentImageId}`;
+      }
+    }
+  }
+
+  uploadLogo(event: any) {
+    if (event.target.files.length > 0) {
+      this.logoUploadStatus = UploadStatus.Uploading;
+      const file: File = event.target.files[0];
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        if (file.size < 1) {
+          this._snackBar.open('The size of the file uploaded must be greater than zero.', 'close');
+          return;
+        } else if (file.size > 1024 * 1024) {
+          this._snackBar.open('The size of the file uploaded must be less than 1MB.', 'close');
+          return;
+        }
+
+        const fileRegExp = /^data\:(.*);base64,(.*)/g;
+        const fileRegExpResults = fileRegExp.exec(fileReader.result!.toString());
+
+        if (fileRegExpResults) {
+          const mimeType = fileRegExpResults[1];
+          if (
+            !(
+              mimeType === 'image/gif' ||
+              mimeType === 'image/jpeg' ||
+              mimeType === 'image/png' ||
+              mimeType === 'image/svg+xml'
+            )
+          ) {
+            this._snackBar.open(
+              'The type of the file uploaded must be GIF, JPEG, PNG or SVG.',
+              'close',
+            );
+            return;
+          }
+
+          this.setLogoImage(fileRegExpResults[2], mimeType);
+        }
+      };
+      fileReader.readAsDataURL(file);
+    }
+  }
+
+  setLogoImage(data: string, mimeType: string) {
+    let productImageRequest = new ProductImageModel();
+    productImageRequest.alternateText =
+      this.formGroup.value.name === '' ? 'unable to load image' : this.formGroup.value.name;
+    productImageRequest.cheesyProductId = this.id;
+    productImageRequest.data = data;
+    productImageRequest.mimeType = mimeType;
+
+    this.productImageClient
+      .create(productImageRequest)
+      .pipe(
+        tap((response) => {
+          this.logoUploadStatus = UploadStatus.Uploaded;
+          this.imageIds.push(response.id!);
+          this.currentImageId = response.id;
+          this.currentSrc = `${environment.cheesymartApiEndpoint}/api/ProductImage/${response.id}`;
+        }),
+        catchError((error) => {
+          this.logoUploadStatus = UploadStatus.NotUploaded;
+          return of();
+        }),
+        takeUntil(this.ngUnsubscribe$),
+      )
+      .subscribe();
+  }
 }
-
-// private checkCheeseNameExists(name: string): Observable<boolean> {
-// 	this.isCheckingName = true;
-
-// 	return this.partnerServiceClient.checkPartnerServiceExists(name).pipe(
-// 		tap(result => {
-// 			this.isCheckingName = false;
-
-// 			if (result.exists && result.exists === true) {
-// 				console.log('Found existing partner service with name');
-// 				this.formGroup.controls.partnerServiceName.setErrors({
-// 					partnerServiceNameExists: 'Partner service name already exists',
-// 				});
-// 				this.formGroup.controls.partnerServiceName.markAsTouched();
-// 			}
-
-// 			this.isCheckingName = false;
-// 		}),
-// 		catchError(error => {
-// 			this.isCheckingName = false;
-// 			console.error(error);
-// 			return EMPTY;
-// 		})
-// 	);
-// }
-
-// uploadLogo(event: any) {
-// 	this.pageNotificationComponent.closeNotification();
-// 	if (event.target.files.length > 0) {
-// 		this.logoUploadStatus = UploadStatus.Uploading;
-// 		const file: File = event.target.files[0];
-// 		const fileReader = new FileReader();
-// 		fileReader.onload = e => {
-// 			if (file.size < 1) {
-// 				this.showUploadError('The size of the file uploaded must be greater than zero.');
-// 				return;
-// 			} else if (file.size > 1024 * 1024) {
-// 				this.showUploadError('The size of the file uploaded must be less than 1MB.');
-// 				return;
-// 			}
-
-// 			const fileRegExp = /^data\:(.*);base64,(.*)/g;
-// 			const fileRegExpResults = fileRegExp.exec(fileReader.result!.toString());
-
-// 			if (fileRegExpResults) {
-// 				const mimeType = fileRegExpResults[1];
-// 				if (
-// 					!(
-// 						mimeType === 'image/gif' ||
-// 						mimeType === 'image/jpeg' ||
-// 						mimeType === 'image/png' ||
-// 						mimeType === 'image/svg+xml'
-// 					)
-// 				) {
-// 					this.showUploadError('The type of the file uploaded must be GIF, JPEG, PNG or SVG.');
-// 					return;
-// 				}
-// 				if (mimeType === 'image/svg+xml') {
-// 					this.setLogoImage(fileRegExpResults[2], mimeType);
-// 				} else {
-// 					this.validateImageSize(fileReader.result!.toString())
-// 						.pipe(
-// 							tap(() => {
-// 								this.setLogoImage(fileRegExpResults[2], mimeType);
-// 							}),
-// 							catchError(error => {
-// 								this.showUploadError(error);
-// 								return of();
-// 							})
-// 						)
-// 						.subscribe();
-// 				}
-// 			}
-// 		};
-// 		fileReader.readAsDataURL(file);
-// 	}
-// }

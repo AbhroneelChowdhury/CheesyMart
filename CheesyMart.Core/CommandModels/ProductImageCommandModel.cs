@@ -1,10 +1,10 @@
-﻿namespace CheesyMart.Core.DomainModels;
+﻿namespace CheesyMart.Core.CommandModels;
 
-public class ProductImageModel
+public class ProductImageCommandModel
 {
     public int Id { get; set; }
     public int? CheesyProductId { get; set; }
     public string AlternateText { get; set; }
     public string MimeType { get; set; }
-    public byte[] Data { get; set; }
+    public string Data { get; set; }
 }

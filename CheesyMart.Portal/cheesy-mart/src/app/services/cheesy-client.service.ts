@@ -711,7 +711,7 @@ export class ProductImageClient {
    * @param body (optional)
    * @return Success
    */
-  create(body: ProductImageModel | null | undefined): Observable<ProductImageModel> {
+  create(body: ProductImageCommandModel | null | undefined): Observable<ProductImageModel> {
     let url_ = this.baseUrl + '/api/ProductImage';
     url_ = url_.replace(/[?&]$/, '');
 
@@ -967,13 +967,63 @@ export interface IMetadataModel {
   type?: string | undefined;
 }
 
+export class ProductImageCommandModel implements IProductImageCommandModel {
+  id?: number | undefined;
+  cheesyProductId?: number | undefined;
+  alternateText?: string | undefined;
+  mimeType?: string | undefined;
+  data?: string | undefined;
+
+  constructor(data?: IProductImageCommandModel) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(data?: any) {
+    if (data) {
+      this.id = data['id'];
+      this.cheesyProductId = data['cheesyProductId'];
+      this.alternateText = data['alternateText'];
+      this.mimeType = data['mimeType'];
+      this.data = data['data'];
+    }
+  }
+
+  static fromJS(data: any): ProductImageCommandModel {
+    data = typeof data === 'object' ? data : {};
+    let result = new ProductImageCommandModel();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['id'] = this.id;
+    data['cheesyProductId'] = this.cheesyProductId;
+    data['alternateText'] = this.alternateText;
+    data['mimeType'] = this.mimeType;
+    data['data'] = this.data;
+    return data;
+  }
+}
+
+export interface IProductImageCommandModel {
+  id?: number | undefined;
+  cheesyProductId?: number | undefined;
+  alternateText?: string | undefined;
+  mimeType?: string | undefined;
+  data?: string | undefined;
+}
+
 export class ProductImageModel implements IProductImageModel {
   id?: number | undefined;
   cheesyProductId?: number | undefined;
-  lastUpdated?: Date | undefined;
-  imageData?: string | undefined;
+  alternateText?: string | undefined;
   mimeType?: string | undefined;
-  altText?: string | undefined;
+  data?: string | undefined;
 
   constructor(data?: IProductImageModel) {
     if (data) {
@@ -987,12 +1037,9 @@ export class ProductImageModel implements IProductImageModel {
     if (data) {
       this.id = data['id'];
       this.cheesyProductId = data['cheesyProductId'];
-      this.lastUpdated = data['lastUpdated']
-        ? new Date(data['lastUpdated'].toString())
-        : <any>undefined;
-      this.imageData = data['imageData'];
+      this.alternateText = data['alternateText'];
       this.mimeType = data['mimeType'];
-      this.altText = data['altText'];
+      this.data = data['data'];
     }
   }
 
@@ -1007,10 +1054,9 @@ export class ProductImageModel implements IProductImageModel {
     data = typeof data === 'object' ? data : {};
     data['id'] = this.id;
     data['cheesyProductId'] = this.cheesyProductId;
-    data['lastUpdated'] = this.lastUpdated ? this.lastUpdated.toISOString() : <any>undefined;
-    data['imageData'] = this.imageData;
+    data['alternateText'] = this.alternateText;
     data['mimeType'] = this.mimeType;
-    data['altText'] = this.altText;
+    data['data'] = this.data;
     return data;
   }
 }
@@ -1018,10 +1064,9 @@ export class ProductImageModel implements IProductImageModel {
 export interface IProductImageModel {
   id?: number | undefined;
   cheesyProductId?: number | undefined;
-  lastUpdated?: Date | undefined;
-  imageData?: string | undefined;
+  alternateText?: string | undefined;
   mimeType?: string | undefined;
-  altText?: string | undefined;
+  data?: string | undefined;
 }
 
 export interface FileResponse {

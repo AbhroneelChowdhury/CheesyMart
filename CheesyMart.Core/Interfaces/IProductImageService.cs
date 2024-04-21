@@ -1,10 +1,11 @@
-﻿using CheesyMart.Core.DomainModels;
+﻿using CheesyMart.Core.CommandModels;
+using CheesyMart.Core.DomainModels;
 
 namespace CheesyMart.Core.Interfaces;
 
 public interface IProductImageService
 {
-    Task<ProductImageModel> AddProductImage(ProductImageModel productImageModel);
+    Task<ProductImageModel> AddProductImage(ProductImageCommandModel productImageModel);
     
     Task DeleteProductImage(int id);
     

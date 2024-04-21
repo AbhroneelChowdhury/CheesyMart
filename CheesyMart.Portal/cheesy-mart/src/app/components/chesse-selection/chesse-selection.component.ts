@@ -22,6 +22,9 @@ import {ComponentBase} from '../componentbase';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {CamelSpacePipe} from '../../pipes/camel-space.pipe';
 import {RouterModule} from '@angular/router';
+import {environment} from '../../../environments/environment';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-chesse-selection',
@@ -34,6 +37,7 @@ import {RouterModule} from '@angular/router';
     FormsModule,
     RouterLink,
     MatButtonModule,
+    MatProgressSpinnerModule,
     MatCardModule,
     MatIconModule,
     HttpClientModule,
@@ -51,6 +55,7 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
     private el: ElementRef,
     public dialog: MatDialog,
     public override responsive: BreakpointObserver,
+    private _snackBar: MatSnackBar,
   ) {
     super(responsive);
   }
@@ -71,6 +76,7 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
         tap(() => (this.state = 'loaded')),
         catchError((error) => {
           this.state = 'error';
+          this._snackBar.open(error, 'close');
           return of();
         }),
         takeUntil(this.ngUnsubscribe$),
@@ -117,5 +123,9 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
         takeUntil(this.ngUnsubscribe$),
       )
       .subscribe();
+  }
+
+  getProductImageUrl(id: number) {
+    return `${environment.cheesymartApiEndpoint}/api/ProductImage/${id}`;
   }
 }
