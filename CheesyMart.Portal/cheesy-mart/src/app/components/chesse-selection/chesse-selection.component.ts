@@ -1,15 +1,11 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, FormsModule, Validators} from '@angular/forms';
+import {ElementRef, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {forkJoin, Observable, of} from 'rxjs';
-import {catchError, finalize, takeUntil, tap} from 'rxjs/operators';
-import {
-  CheesyProductModel,
-  CheesyProductsModel,
-  CheesyProductCatalogClient,
-} from '../../services/cheesy-client.service';
+import {catchError, takeUntil, tap} from 'rxjs/operators';
+import {CheesyProductModel, CheesyProductCatalogClient} from '../../services/cheesy-client.service';
 
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -25,6 +21,9 @@ import {RouterModule} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Store} from '@ngrx/store';
+import {CartActions, CartApiActions} from '../../state/cart.actions';
+import {selectCartCollection} from '../../state/cart.selectors';
 
 @Component({
   selector: 'app-chesse-selection',
@@ -49,6 +48,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 export class ChesseSelectionComponent extends ComponentBase implements OnInit {
   state = 'busy';
   dataModel: CheesyProductModel[] = [];
+  cartCollection$ = this.store.select(selectCartCollection);
 
   constructor(
     private cheesyClient: CheesyProductCatalogClient,
@@ -56,6 +56,7 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
     public dialog: MatDialog,
     public override responsive: BreakpointObserver,
     private _snackBar: MatSnackBar,
+    private store: Store,
   ) {
     super(responsive);
   }
@@ -73,7 +74,11 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
 
     forkJoin(initObservables)
       .pipe(
-        tap(() => (this.state = 'loaded')),
+        tap(() => {
+          this.state = 'loaded';
+          let cart = this.dataModel;
+          this.store.dispatch(CartApiActions.retrievedProductList({cart}));
+        }),
         catchError((error) => {
           this.state = 'error';
           this._snackBar.open(error, 'close');
@@ -84,20 +89,24 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
       .subscribe();
   }
 
-  deleteCheeseFromCatalog(chesse: CheesyProductModel) {
+  deleteCheeseProductFromCatalog(chesseProduct: CheesyProductModel) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: `Delete ${chesse.name} from catalog`,
-        message: `Are you sure you want to delete ${chesse.name} from catalog ?`,
+        title: `Delete ${chesseProduct.name} from catalog`,
+        message: `Are you sure you want to delete ${chesseProduct.name} from catalog ?`,
       },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.cheesyClient
-          .delete(chesse.id!)
+          .delete(chesseProduct.id!)
           .pipe(
-            tap(() => this.loadCatalog()),
+            tap(() => {
+              let Id = chesseProduct.id!;
+              this.store.dispatch(CartActions.removeProduct({Id}));
+              this.loadCatalog();
+            }),
             catchError((error) => {
               this.state = 'error';
               return of();
@@ -114,7 +123,9 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
       .getAll(null, null, null)
       .pipe(
         tap((response) => {
-          if (response && response.products) this.dataModel = response.products;
+          if (response && response.products) {
+            this.dataModel = response.products;
+          }
         }),
         catchError((error) => {
           this.state = 'error';
@@ -127,5 +138,30 @@ export class ChesseSelectionComponent extends ComponentBase implements OnInit {
 
   getProductImageUrl(id: number) {
     return `${environment.cheesymartApiEndpoint}/api/ProductImage/${id}`;
+  }
+
+  AddToCart(cheeseProduct: CheesyProductModel) {
+    if (cheeseProduct) {
+      let Id = cheeseProduct.id!;
+      this.store.dispatch(CartActions.addProduct({Id}));
+    }
+  }
+
+  RemoveFromCart(cheeseProduct: CheesyProductModel) {
+    if (cheeseProduct) {
+      let Id = cheeseProduct.id!;
+      this.store.dispatch(CartActions.removeProduct({Id}));
+    }
+  }
+
+  CheckIfAdddedToCart(cheeseProduct: CheesyProductModel) {
+    let found: boolean = false;
+    this.cartCollection$.forEach((item) => {
+      item.forEach((pi) => {
+        if (pi?.id === cheeseProduct.id) found = true;
+      });
+    });
+
+    return found;
   }
 }

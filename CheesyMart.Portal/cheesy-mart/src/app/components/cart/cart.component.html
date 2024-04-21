@@ -1,1 +1,31 @@
-<p>cart works!</p>
+<h1>Your cart</h1>
+<div class="cm-flex-row cm-gap-15" *ngFor="let cartItem of selectedItems">
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input value="{{cartItem?.name}}" matInput type="text" disabled />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Price per Kg</mat-label>
+    <input value="{{cartItem?.pricePerKilo}}" matInput type="text" disabled appPricePerKilo />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Quantity in Kg</mat-label>
+    <input #inputQuantity matInput type="text" required appPricePerKilo />
+  </mat-form-field>
+</div>
+
+<div *ngIf="!selectedItems || selectedItems.length === 0">
+  <h2>Cart is empty !</h2>
+  <button routerLink="" mat-button color="primary">Add some</button>
+</div>
+
+<button
+  *ngIf="selectedItems && selectedItems.length > 0"
+  mat-flat-button
+  color="primary"
+  (click)="calculate()"
+>
+  Calculate
+</button>

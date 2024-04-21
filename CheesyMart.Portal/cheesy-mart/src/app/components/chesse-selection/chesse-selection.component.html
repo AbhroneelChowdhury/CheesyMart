@@ -9,7 +9,21 @@
 <div *ngIf="state ==='loaded'" class="cheese-board">
   <mat-card *ngFor="let cheeseProduct of dataModel" class="cheese-card">
     <mat-card-header>
-      <mat-card-title>{{cheeseProduct.name}}</mat-card-title>
+      <mat-card-title>
+        <span class="title-flex">
+          <span>{{cheeseProduct.name}} </span>
+          <span class="cart-icon">
+            <mat-icon
+              *ngIf="CheckIfAdddedToCart(cheeseProduct); else elseBlock"
+              (click)="RemoveFromCart(cheeseProduct)"
+              fontIcon="shopping_cart"
+            ></mat-icon>
+            <ng-template #elseBlock>
+              <mat-icon (click)="AddToCart(cheeseProduct)" fontIcon="add_shopping_cart"></mat-icon>
+            </ng-template>
+          </span>
+        </span>
+      </mat-card-title>
       <mat-card-subtitle>{{cheeseProduct.cheeseType | camelSpace}}</mat-card-subtitle>
     </mat-card-header>
 
@@ -32,7 +46,7 @@
         <mat-icon fontIcon="edit"></mat-icon>
         Edit
       </button>
-      <button mat-button color="warn" (click)="deleteCheeseFromCatalog(cheeseProduct)">
+      <button mat-button color="warn" (click)="deleteCheeseProductFromCatalog(cheeseProduct)">
         <mat-icon fontIcon="delete"></mat-icon>Delete
       </button>
     </mat-card-actions>

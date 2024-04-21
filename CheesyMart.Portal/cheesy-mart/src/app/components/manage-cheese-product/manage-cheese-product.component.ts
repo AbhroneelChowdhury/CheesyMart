@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute, Router, RouterLink, RouterModule} from '@angular/router';
@@ -82,7 +82,6 @@ export class ManageCheeseProductComponent extends ComponentBase implements OnIni
 
   constructor(
     private dialog: MatDialog,
-    private elementRef: ElementRef,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
