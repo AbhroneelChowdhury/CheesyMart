@@ -37,7 +37,7 @@ public class ProductImageService(MainDbContext mainDbContext,
         var imageRecord = await mainDbContext.ProductImages.FirstOrDefaultAsync(c => c.Id == id);
         if (imageRecord == null)
         {
-            throw new NotFoundException("Requested image not found");
+            throw new NotFoundException("Item not found");
         }
 
         mainDbContext.ProductImages.Remove(imageRecord);
@@ -50,7 +50,7 @@ public class ProductImageService(MainDbContext mainDbContext,
             .Include(p => p.ProductImageData).FirstOrDefaultAsync(c => c.Id == id);
         if (imageRecord == null)
         {
-            throw new NotFoundException("Requested image not found");
+            throw new NotFoundException("Item not found");
         }
         return mapper.Map<ProductImageModel>(imageRecord);
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using CheesyMart.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -23,12 +24,11 @@ public partial class MainDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
-        
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+       base.OnConfiguring(optionsBuilder);
+       optionsBuilder.LogTo(s =>
+       {
+           //Debug.WriteLine(s);
+       });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

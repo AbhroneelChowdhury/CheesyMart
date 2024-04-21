@@ -99,7 +99,8 @@ public class CheesyProductService(MainDbContext mainDbContext,
             searchRequest = searchRequest.Where(s => s.Color == searchColor);
         }
         if (!string.IsNullOrEmpty(searchModel.Name))
-            searchRequest = searchRequest.Where(s => s.Name.Contains(searchModel.Name));
+            searchRequest = searchRequest.Where(s => s.Name.ToLower().
+                Contains(searchModel.Name.ToLower()));
         
         if (!string.IsNullOrEmpty(searchModel.CheeseType))
         {
