@@ -14,6 +14,8 @@ Run all the unit tests.
 
 Change the Default connection string in the CheesyMart.API and launch it in Rider / Visual studio.
 
+Note : The api url needs to be added to environment.ts file.
+
 Navigate to \CheesyMart\CheesyMart.Portal\cheesy-mart and
 
 ```bash
@@ -39,3 +41,21 @@ Install serilog and navigate to the default port for example http://localhost:53
 
 If you need to change the API input and output models just run CakeBuild.cmd in the root folder
 Note: Nswag newer version has an issue and you might need to make a change in the cheesy-client.service.ts to override the message string.
+
+
+## Docker build
+If you are using docker you can run the build from the root folder
+
+```bash
+docker build -t cheesy-martapi -f CheesyMart.API/Dockerfile .
+
+npm run start
+```
+You might need to connect host network to connect to sql server unless running on docker.
+
+For the angular app docker file is located \CheesyMart\CheesyMart.Portal\cheesy-mart
+```bash
+docker build -t cheesy-mart:production --build-arg build_env=production .
+docker run -p 8080:80 -d cheesy-mart:production
+```
+navigate to http://localhost:8080/index.html
